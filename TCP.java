@@ -1,88 +1,73 @@
-/*Write a program to find the shortest path between vertices using
-bellman-ford algorithm.*/
-//bellman ford algorithm for shortest distance from a source node to all the remaining nodes
+/* Using TCP/IP sockets, write a client – server program to make the
+client send the file name and to make the server send back the contents
+of the requested file if present*/
+/*SERVER program*/
 
-import java.util.*;
-public class BellmanFord {
- private static int N;
- private static int[][] graph;
- public static void main(String[] args) {
- Scanner sc = new Scanner(System.in);
- System.out.print("Enter the number of Vertices : ");
- N = sc.nextInt();
- System.out.println("Enter the Weight Matrix of Graph");
- graph = new int[N][N];
- for (int i = 0; i < N; i++)
- for (int j = 0; j < N; j++)
- graph[i][j] = sc.nextInt();
- System.out.print("Enter the Source Vertex : ");
- int source = sc.nextInt();
- bellmanFord(source - 1);
+import java.net.*;
+import java.io.*;
+public class TCPS {
+ public static void main(String[] args) throws Exception {
+ ServerSocket sersock = new ServerSocket(4000);
+ System.out.println("Server ready for connection");
+ Socket sock = sersock.accept();
+ System.out.println("Connection Is successful and waiting for the client request");
+ InputStream istream = sock.getInputStream();
+ BufferedReader fileRead = new BufferedReader(new InputStreamReader(istream));
+ String fname = fileRead.readLine();
+ BufferedReader ContentRead = new BufferedReader(new FileReader(fname));
+ OutputStream ostream = sock.getOutputStream();
+ PrintWriter pwrite = new PrintWriter(ostream, true);
+ String str;
+ while ((str = ContentRead.readLine()) != null) {
+ pwrite.println(str);
  }
- public static void bellmanFord(int src) {
- int[] dist = new int[N];
- Arrays.fill(dist, Integer.MAX_VALUE);
- dist[src] = 0;
- for (int i = 0; i < N; i++) {
- for (int u = 0; u < N; u++) {
- for (int v = 0; v < N; v++) {
- if (graph[u][v] != 0 && dist[u] != Integer.MAX_VALUE && dist[u] + graph[u][v] < dist[v]) {
- dist[v] = dist[u] + graph[u][v];
+ sock.close();
+ sersock.close();
+ pwrite.close();
+ fileRead.close();
+ ContentRead.close();
  }
+}
+/*first the server port should be established before it accepts any request from the client*/
+/*Client program*/
+import java.net.*;
+import java.io.*;
+public class TCPC {
+ public static void main(String[] args) throws Exception {
+ Socket sock = new Socket("127.0.0.1", 4000);
+ System.out.println("Enter the filename");
+ BufferedReader keyRead = new BufferedReader(new InputStreamReader(System.in));
+ String fname = keyRead.readLine();
+ OutputStream ostream = sock.getOutputStream();
+ PrintWriter pwrite = new PrintWriter(ostream, true);
+ pwrite.println(fname);
+ InputStream istream = sock.getInputStream();
+ BufferedReader socketRead = new BufferedReader(new InputStreamReader(istream));
+ String str;
+ while ((str = socketRead.readLine()) != null) {
+ System.out.println(str);
  }
- }
- }
- for (int u = 0; u < N; u++) {
- for (int v = 0; v < N; v++) {
- if (graph[u][v] != 0 && dist[u] != Integer.MAX_VALUE && dist[u] + graph[u][v] < dist[v]) {
- System.out.println("Negative weight cycle detected.");
- return;
- }
- }
- }
- printSolution(dist);
- }
- public static void printSolution(int[] dist) {
- System.out.println("Vertex \t Distance from Source");
- for (int i = 0; i < N; i++) {
- System.out.println((i + 1) + "\t\t" + dist[i]);
- }
+ pwrite.close();
+ socketRead.close();
+ keyRead.close();
  }
 }
 
-/*output:-
-Enter the number of Vertices : 5
-Enter the Weight Matrix of Graph
-0 6 0 7 0
-0 0 5 8 -4
-0 0 0 0 0
-0 0 -3 0 9
-2 0 0 0 0
-Enter the Source Vertex : 1
-Vertex Distance from Source
-1 0
-2 6
-3 4
-4 7
-5 2
+/*First run the server program then in new terminal window run the client program and input the
+file name the server will return the file content if it exists
+
+output:-
+SERVER PROGRAM
+javac TCPS.java
+java TCPS
+Server ready for connection
+Connection Is successful and waiting for the client request
+CLIENT program
+in new terminal window
+javac TCPC.java
+java TCPC
+Enter the filename
+text.txt
+This the file client requested from the server....
 */
-/*Enter the number of Vertices : 3
-Enter the Weight Matrix of Graph
-0 10 5
-0 0 -8
-0 0 0
-Enter the Source Vertex : 1
-Vertex Distance from Source
-1 0
-2 10
-3 2
-*/
-/*
-Enter the number of Vertices : 3
-Enter the Weight Matrix of Graph
-0 10 0
-0 0 20
-0 -30 0
-Enter the Source Vertex : 1
-Negative weight cycle detected.
-*/
+ 
