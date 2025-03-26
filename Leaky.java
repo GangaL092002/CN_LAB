@@ -3,7 +3,7 @@ and token bucket algorithm.*/
 /*Leaky bucket algorithm*/
 
 import java.util.Scanner;
-public class Main {
+public class Leaky_bucket {
  public static void main(String args[]) {
  Scanner in = new Scanner(System.in);
  int bucket_remaining = 0, sent, received;
