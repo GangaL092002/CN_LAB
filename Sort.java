@@ -1,7 +1,7 @@
 /*Write a program to sort frames using appropriate sorting techniques*/
 
 import java.util.*;
-public class Sort frame {
+public class Sort {
  public static void main(String[] args) {
  List<int[]> frame = new ArrayList<>();
  System.out.println("Enter no. of frames:");
